@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Tomato{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        /* Styling the search bar for smooth animation */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            width: 0;
+            height: 40px;
+            padding: 0 10px;
+            transition: width 0.4s ease-in-out;
+            border-radius: 20px;
+            border: 1px solid #050000;
+            opacity: 0;
+            color: black; /* Ensuring the text typed is visible */
+        }
+
+        .search-input.active {
+            width: 200px;
+            opacity: 1;
+        }
+
+        .go-button {
+            display: none;
+            margin-left: 10px;
+        }
+
+        .search-input.active + .go-button {
+            display: inline-block;
+        }
+
+        /* Popup message for login and logout */
+        #popup-message {
+            display: none;
+            position: fixed;
+            top: 100px; /* Adjusted below header */
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        #popup-message.error {
+            background-color: #f44336;
+        }
+
+        /* Style the login popup */
+        #popup-container {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #popup-container.flex {
+            display: flex;
+        }
+
+        .popup-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .popup-box h2 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .popup-box input,
+        .popup-box button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .popup-box button {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .popup-box button:hover {
+            background-color: #45a049;
+        }
+
+        .popup-box .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .popup-box .close:hover {
+            color: black;
+        }
+    </style>
+    {% block head_scripts %}{% endblock %}
+</head>
+<body class="bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center p-4 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg text-white">
+        <div class="flex items-center space-x-2">
+            <img src="https://placehold.co/30x30" alt="Logo" class="w-8 h-8">
+            <span class="font-semibold">Tomato</span>
+            <span></span>
+        </div>
+        <div class="flex space-x-6 items-center">
+            <div class="search-container">
+                <i class="fas fa-search cursor-pointer" onclick="toggleSearchBar()"></i>
+                <input type="text" id="search-input" class="search-input" placeholder="Search..." oninput="showGoButton()" onkeydown="searchOnEnter(event)">
+                <button id="go-button" class="go-button bg-blue-500 text-white px-4 py-2 rounded-lg" onclick="executeSearch()">Go</button>
+            </div>
+            {% if session.user_id %}
+            <span>Welcome, {{ session.user_name }}</span>
+            <form id="logout-form" onsubmit="handleLogout(event)" method="POST" class="inline">
+                <button type="submit" class="ml-2 bg-red-500 text-white px-4 py-2 rounded-full">Logout</button>
+            </form>
+
+            {% if session.user_role == 'admin' %}
+            <a href="{{ url_for('admin_sales') }}" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-full hover:underline">Admin Sales</a>
+            {% endif %}
+            {% else %}
+            <span class="cursor-pointer" onclick="showLoginPopup()">Sign In</span>
+            {% endif %}
+            <!-- Cart Icon with Checkout Redirect -->
+            <i class="fas fa-shopping-cart cursor-pointer" onclick="redirectToCheckout()"></i>
+        </div>
+    </header>
+
+    <!-- Popup message -->
+    <div id="popup-message"></div>
+
+    <!-- Login Popup -->
+    <div id="popup-container">
+        <div class="popup-box">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h2>Sign In</h2>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-purple-500 to-pink-500 p-4 text-center text-white shadow-lg mt-4">
+        <p>&copy; 2024 Tomato | All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Redirect to checkout page
+        function redirectToCheckout() {
+            window.location.href = "/checkout";
+        }
+
+        // Toggle search bar expansion
+        function toggleSearchBar() {
+            const searchInput = document.getElementById('search-input');
+            searchInput.classList.toggle('active');
+            if (searchInput.classList.contains('active')) {
+                searchInput.focus();
+            } else {
+                searchInput.value = ''; // Reset search input if closed
+                document.getElementById('go-button').style.display = 'none'; // Hide "Go" button
+            }
+        }
+
+        // Show Go button when typing
+        function showGoButton() {
+            const searchInput = document.getElementById('search-input');
+            const goButton = document.getElementById('go-button');
+            if (searchInput.value.trim() !== '') {
+                goButton.style.display = 'inline-block';
+            } else {
+                goButton.style.display = 'none';
+            }
+        }
+
+        // Execute search when pressing "Enter" key
+        function searchOnEnter(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                executeSearch();
+            }
+        }
+
+        // Simulate search execution
+        function executeSearch() {
+            const searchInput = document.getElementById('search-input').value;
+            if (searchInput) {
+                window.location.href = `/search?q=${searchInput}`;
+            }
+        }
+
+        // Function to display popup messages
+        function showPopupMessage(message, success = true) {
+            const popup = document.getElementById('popup-message');
+            popup.innerHTML = message;
+            popup.classList.remove('error');
+            if (!success) {
+                popup.classList.add('error');
+            }
+            popup.style.display = 'block';
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 3000);
+        }
+
+        // Handle logout event
+        function handleLogout(event) {
+            event.preventDefault();
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showPopupMessage(data.message);
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 3000);
+                } else {
+                    showPopupMessage('Logout failed!', false);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Handle login event
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showPopupMessage('Login successful!');
+                    closePopup();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showPopupMessage('Invalid credentials. Please try again.', false);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Show the login popup
+        function showLoginPopup() {
+            document.getElementById('popup-container').classList.add('flex');
+        }
+
+        // Close the login popup
+        function closePopup() {
+            document.getElementById('popup-container').classList.remove('flex');
+        }
+    </script>
+    {% block page_scripts %}{% endblock %}
+</body>
+</html>

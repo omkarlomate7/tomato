@@ -1,176 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+{% extends 'base.html' %}
 
-    <script>
-        function showPopup(dishId, name, price, imgSrc) {
-            console.log("Attempting to show popup");
-            console.log("Dish ID:", dishId);
-            console.log("Dish Name:", name);
-            console.log("Dish Price:", price);
-            console.log("Image Source:", imgSrc);
+{% block title %}
+    Search Results
+{% endblock %}
 
-            // Update the popup content with the dish information
-            document.getElementById('popup-name').innerText = name;
-            document.getElementById('popup-price').innerText = '₹' + price;
-            document.getElementById('popup-image').src = imgSrc || 'https://placehold.co/400x400'; // Use default if no image
+{% block content %}
+<section class="mt-6 px-4">
+    <h1 class="text-3xl font-bold text-gray-800">Search Results</h1>
 
-            // Store dishId in a hidden element
-            document.getElementById('popup-dish-id').value = dishId;
+    <!-- Display Dishes -->
+    {% if dishes %}
+    <h2 class="text-xl font-bold text-gray-800 mt-8">Dishes</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+        {% for dish in dishes %}
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer"
+                 onclick="showProductPopup('{{ dish.dish_id }}', '{{ dish.dish_name }}', '{{ dish.dish_price }}', '{{ dish.dish_image }}')">
+                <img src="{{ dish.dish_image }}" alt="{{ dish.dish_name }}" class="w-full"
+                     onerror="this.src='https://placehold.co/250x150';">
+                <div class="p-4">
+                    <p class="text-gray-800 font-bold">{{ dish.dish_name }}</p>
+                    <p class="text-gray-500 mt-2">₹{{ dish.dish_price }}</p>
+                    <p class="text-gray-500 mt-2">Restaurant: {{ dish.restaurant_name }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-500">No dishes found for your query.</p>
+    {% endif %}
+</section>
 
-            // Show the popup
-            document.getElementById('popup-container').style.display = 'flex';
-        }
-
-        function closePopup() {
-            console.log("Popup closed");
-            document.getElementById('popup-container').style.display = 'none';
-        }
-
-        function changeQuantity(amount) {
-            const quantityInput = document.getElementById('quantity-input');
-            let currentQuantity = parseInt(quantityInput.value);
-            currentQuantity += amount;
-            if (currentQuantity < 1) currentQuantity = 1;
-            quantityInput.value = currentQuantity;
-        }
-
-        function addToCart() {
-            const dishId = document.getElementById('popup-dish-id').value;
-            const quantity = parseInt(document.getElementById('quantity-input').value);
-
-            console.log('Dish ID:', dishId);
-            console.log('Quantity:', quantity);
-
-            fetch('/add-to-cart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    dish_id: dishId,
-                    quantity: quantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    showConfirmationPopup(data.message);
-                    closePopup();
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        function showConfirmationPopup(message) {
-            const popup = document.createElement('div');
-            popup.className = 'fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg';
-            popup.innerHTML = message;
-
-            document.body.appendChild(popup);
-
-            // Remove popup after 3 seconds
-            setTimeout(() => {
-                popup.remove();
-            }, 3000);
-        }
-    </script>
-</head>
-<body class="bg-gray-100">
-    <header class="flex justify-between items-center p-4 bg-white shadow-md">
-        <div class="flex items-center space-x-2">
-            <img src="https://placehold.co/30x30" alt="Logo" class="w-8 h-8">
-            <span class="text-gray-700 font-semibold">Tomato</span>
-            <span class="text-gray-500">Pune, Maharashtra, India</span>
-        </div>
-    
-        <div class="flex space-x-4 items-center">
-            <!-- Search form -->
-            <form action="/search" method="GET" class="flex items-center">
-                <input type="text" name="q" placeholder="Search restaurants or dishes..." class="p-2 border rounded-lg">
-                <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg">Search</button>
-            </form>
-    
-            <!-- Checkout button -->
-            <button class="ml-4 bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition"
-            onclick="window.location.href='/checkout'">
-            Checkout
+<!-- Popup for adding to cart -->
+<div id="product-popup-container" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 items-center justify-center">
+    <div class="bg-white shadow-xl rounded-lg p-6 w-96 relative">
+        <button onclick="closeProductPopup()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times"></i>
         </button>
 
-        </div>
-    </header>
-    
-    
-    <!-- Results Section -->
-    <section class="mt-6 px-4">
-        <h1 class="text-3xl font-bold text-gray-800">Search Results</h1>
+        <img id="popup-image" src="https://placehold.co/400x400" alt="Product Image" class="rounded-lg mb-4 mx-auto">
+        <div class="text-center">
+            <h2 id="popup-name" class="text-2xl font-semibold text-gray-800"></h2>
+            <p id="popup-price" class="text-lg text-gray-700 mt-1"></p>
 
-        <!-- Display Dishes -->
-        {% if dishes %}
-        <h2 class="text-xl font-bold text-gray-800 mt-8">Dishes</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-            {% for dish in dishes %}
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer" onclick="showPopup('{{ dish.dish_id }}', '{{ dish.dish_name }}', '{{ dish.dish_price }}', '{{ dish.dish_image }}')">
-                    <img src="{{ dish.dish_image }}" alt="{{ dish.dish_name }}" class="w-full" onerror="this.src='https://placehold.co/250x150';">
-                    <div class="p-4">
-                        <p class="text-gray-800 font-bold">{{ dish.dish_name }}</p>
-                        <p class="text-gray-500 mt-2">₹{{ dish.dish_price }}</p>
-                        <p class="text-gray-500 mt-2">Restaurant: {{ dish.restaurant_name }}</p> <!-- Fix: Show restaurant name -->
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <p class="text-gray-500">No dishes found for your query.</p>
-        {% endif %}
-    </section>
+            <input type="hidden" id="popup-dish-id">
 
-    <!-- Popup for adding to cart -->
-    <div id="popup-container" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 items-center justify-center">
-        <div class="bg-white shadow-xl rounded-lg p-6 w-96 relative">
-            <button onclick="closePopup()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
-            </button>
-    
-            <img id="popup-image" src="https://placehold.co/400x400" alt="Product Image" class="rounded-lg mb-4 mx-auto">
-            <div class="text-center">
-                <h2 id="popup-name" class="text-2xl font-semibold text-gray-800"></h2>
-                <p id="popup-price" class="text-lg text-gray-700 mt-1"></p>
+            <div class="flex justify-center items-center mt-4 space-x-2">
+                <button onclick="changeQuantity(-1)" class="bg-gray-300 px-2 py-1 rounded">-</button>
+                <input id="quantity-input" type="number" value="1" min="1" class="w-16 text-center border border-gray-300 rounded-lg">
+                <button onclick="changeQuantity(1)" class="bg-gray-300 px-2 py-1 rounded">+</button>
+            </div>
 
-                <input type="hidden" id="popup-dish-id">
-
-                <div class="flex justify-center items-center mt-4 space-x-2">
-                    <button onclick="changeQuantity(-1)" class="bg-gray-300 px-2 py-1 rounded">-</button>
-                    <input id="quantity-input" type="number" value="1" min="1" class="w-16 text-center border border-gray-300 rounded-lg">
-                    <button onclick="changeQuantity(1)" class="bg-gray-300 px-2 py-1 rounded">+</button>
-                </div>
-
-                <div class="flex items-center justify-center mt-6 space-x-4">
-                    <button class="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition" onclick="addToCart()">Add to Cart</button>
-                    <button class="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition" onclick="window.location.href='/checkout'">Checkout</button>
-                </div>
+            <div class="flex items-center justify-center mt-6 space-x-4">
+                <button class="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition" onclick="addToCart()">Add to Cart</button>
+                <button class="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition" onclick="window.location.href='/checkout'">Checkout</button>
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <style>
-        #popup-container {
-            display: none;
-        }
+{% block page_scripts %}
+<script>
+    // Product popup logic (specific to search.html)
+    function showProductPopup(dishId, name, price, imgSrc) {
+        console.log("Attempting to show product popup");
+        console.log("Dish ID:", dishId);
+        console.log("Dish Name:", name);
+        console.log("Dish Price:", price);
+        console.log("Image Source:", imgSrc);
 
-        #popup-container.flex {
-            display: flex;
-        }
-    </style>
+        // Update the popup content with the dish information
+        document.getElementById('popup-name').innerText = name;
+        document.getElementById('popup-price').innerText = '₹' + price;
+        document.getElementById('popup-image').src = imgSrc || 'https://placehold.co/400x400'; // Use default if no image
 
-</body>
-</html>
+        // Store dishId in a hidden element
+        document.getElementById('popup-dish-id').value = dishId;
+
+        // Show the product popup
+        document.getElementById('product-popup-container').classList.add('flex');
+        document.getElementById('product-popup-container').classList.remove('hidden');
+    }
+
+    function closeProductPopup() {
+        console.log("Product popup closed");
+        document.getElementById('product-popup-container').classList.add('hidden');
+        document.getElementById('product-popup-container').classList.remove('flex');
+    }
+
+    function changeQuantity(amount) {
+        const quantityInput = document.getElementById('quantity-input');
+        let currentQuantity = parseInt(quantityInput.value);
+        currentQuantity += amount;
+        if (currentQuantity < 1) currentQuantity = 1;
+        quantityInput.value = currentQuantity;
+    }
+
+    function addToCart() {
+        const dishId = document.getElementById('popup-dish-id').value;
+        const quantity = parseInt(document.getElementById('quantity-input').value);
+
+        console.log('Dish ID:', dishId);
+        console.log('Quantity:', quantity);
+
+        fetch('/add-to-cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                dish_id: dishId,
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showConfirmationPopup(data.message);
+                closeProductPopup();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+
+    function showConfirmationPopup(message) {
+        const popup = document.createElement('div');
+        popup.className = 'fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg';
+        popup.innerHTML = message;
+
+        document.body.appendChild(popup);
+
+        // Remove popup after 3 seconds
+        setTimeout(() => {
+            popup.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}
