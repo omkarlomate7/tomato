@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tomato - Food Ordering App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script>
+        // Function to display popup message
+        function showPopupMessage(message, success = true) {
+            const popup = document.createElement('div');
+            popup.className = success
+                ? 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg'
+                : 'fixed top-4 right-4 bg-red-500 text-white p-4 rounded-lg shadow-lg';
+            popup.innerHTML = message;
+
+            document.body.appendChild(popup);
+
+            // Remove popup after 3 seconds
+            setTimeout(() => {
+                popup.remove();
+                if (success) {
+                    window.location.href = '/';  // Redirect after showing the popup if successful
+                }
+            }, 3000);
+        }
+
+        // Handle the logout event asynchronously
+        function handleLogout(event) {
+            event.preventDefault();  // Prevent form submission
+
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showPopupMessage(data.message);  // Display the success message in a popup
+                } else {
+                    showPopupMessage('Logout failed!', false);  // Fallback if something goes wrong
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Handle the login event asynchronously
+        function handleLogin(event) {
+            event.preventDefault();  // Prevent form submission
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showPopupMessage(data.message);  // Display the success message in a popup
+                } else {
+                    showPopupMessage('Invalid credentials. Please try again.', false);  // Failure popup
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Show the login popup
+        function showLoginPopup() {
+            document.getElementById('popup-container').style.display = 'flex';
+        }
+
+        // Hide the login popup
+        function closePopup() {
+            document.getElementById('popup-container').style.display = 'none';
+        }
+    </script>
+</head>
+
+<body class="bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center p-4 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg text-white">
+        <div class="flex items-center space-x-2">
+            <img src="https://placehold.co/30x30" alt="Logo" class="w-8 h-8">
+            <span class="font-semibold">Tomato</span>
+            <span>Pune, Maharashtra, India</span>
+        </div>
+        <div class="flex space-x-6 items-center">
+            <span>Tomato Corporate</span>
+            <i class="fas fa-search"></i>
+            <span>Offers</span>
+            <span>Help</span>
+
+            {% if session.user_id %}
+            <span>Welcome, {{ user_name }}</span>
+            <form id="logout-form" onsubmit="handleLogout(event)" method="POST" class="inline">
+                <button type="submit" class="ml-2 bg-red-500 text-white px-4 py-2 rounded-full">Logout</button>
+            </form>
+
+            {% if session.user_role == 'admin' %}
+            <a href="{{ url_for('admin_sales') }}" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded-full hover:underline">Admin Sales</a>
+            {% endif %}
+
+            {% else %}
+            <span class="cursor-pointer" onclick="showLoginPopup()">Sign In</span>
+            {% endif %}
+
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+    </header>
+
+    <!-- Categories Section -->
+    <section class="mt-10 flex-grow">
+        <h1 class="text-center text-4xl font-bold text-gray-800">What's on your mind?</h1>
+        <div class="flex justify-center space-x-8 mt-8">
+            <a href="/search?q=Burgers" class="text-center transform transition duration-500 hover:scale-110">
+                <span class="text-gray-700 mt-3 block font-semibold">Burgers</span>
+            </a>
+            <a href="/search?q=North Indian" class="text-center transform transition duration-500 hover:scale-110">
+                <span class="text-gray-700 mt-3 block font-semibold">North Indian</span>
+            </a>
+            <a href="/search?q=Pizzas" class="text-center transform transition duration-500 hover:scale-110">
+                <span class="text-gray-700 mt-3 block font-semibold">Pizzas</span>
+            </a>
+            <a href="/search?q=Chinese" class="text-center transform transition duration-500 hover:scale-110">
+                <span class="text-gray-700 mt-3 block font-semibold">Chinese</span>
+            </a>
+            <a href="/search?q=Rolls" class="text-center transform transition duration-500 hover:scale-110">
+                <span class="text-gray-700 mt-3 block font-semibold">Rolls</span>
+            </a>
+            <a href="/search?q=Biryani" class="text-center transform transition duration-500 hover:scale-110">
+                <span class="text-gray-700 mt-3 block font-semibold">Biryani</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Search Bar -->
+    <section class="flex items-center justify-center min-h-[60vh]">
+        <div class="w-full max-w-4xl">
+            <form action="/search" method="GET" class="flex">
+                <input type="text" name="q" placeholder="Search for restaurants, dishes, or cuisines..." 
+                       class="w-full p-4 bg-white border border-gray-300 rounded-full shadow-lg text-lg focus:outline-none focus:ring-4 focus:ring-pink-500 transition">
+                <button type="submit" class="ml-4 bg-pink-500 text-white px-6 py-4 rounded-lg">Search</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Login Popup -->
+    <div id="popup-container" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 items-center justify-center">
+        <div class="bg-white shadow-xl rounded-lg p-6 w-96 relative">
+            <button onclick="closePopup()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Sign In</h2>
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-gray-700">Email:</label>
+                    <input type="email" name="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="password" class="block text-gray-700">Password:</label>
+                    <input type="password" name="password" id="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                    Sign In
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-purple-500 to-pink-500 p-4 text-center text-white shadow-lg mt-4">
+        <p>&copy; 2024 Tomato | All rights reserved.</p>
+    </footer>
+
+    <style>
+        /* Display popup as a flex container when visible */
+        #popup-container {
+            display: none;
+        }
+
+        #popup-container.flex {
+            display: flex;
+        }
+
+        /* Make sure the body takes the full height to push the footer to the bottom */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Footer at the bottom */
+        footer {
+            margin-top: auto;
+        }
+    </style>
+
+</body>
+
+</html>

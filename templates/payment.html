@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .checkmark {
+            display: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            position: relative;
+            margin: 20px auto;
+            animation: bounce 0.5s ease-out;
+        }
+
+        .checkmark::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            border-radius: 3px;
+            border: solid white;
+            border-width: 0 5px 5px 0;
+            transform: rotate(45deg);
+            left: 25px;
+            top: 15px;
+            animation: draw 0.5s ease-in-out;
+        }
+
+        @keyframes draw {
+            0% { width: 0; height: 0; }
+            50% { width: 20px; height: 0; }
+            100% { width: 20px; height: 40px; }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .continue-btn {
+            display: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .continue-btn:hover { background-color: #388E3C; }
+
+        .spinner {
+            display: none;
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #4CAF50;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Payment</h2>
+        <form id="payment-form" action="/fake-payment" method="POST" onsubmit="return validateForm();">
+            <!-- Payment Method Selection -->
+            <div class="mb-4">
+                <label for="payment-method" class="block text-gray-700 font-bold mb-2">Select Payment Method</label>
+                <select name="payment_method" id="payment-method" class="w-full border border-gray-300 p-3 rounded-lg">
+                    <option value="upi">UPI</option>
+                    <option value="credit_card">Credit/Debit Card</option>
+                    <option value="net_banking">Net Banking</option>
+                </select>
+            </div>
+
+            <!-- UPI Payment Section -->
+            <div class="mb-4" id="upi-section">
+                <label for="upi-id" class="block text-gray-700 font-bold mb-2">UPI ID</label>
+                <input type="text" name="upi_id" id="upi-id" class="w-full border border-gray-300 p-3 rounded-lg" placeholder="Enter your UPI ID">
+                <p id="error-message-upi" class="text-red-500 hidden">Invalid UPI ID. Please enter a valid UPI ID containing "@".</p>
+            </div>
+
+            <!-- Credit/Debit Card Section -->
+            <div class="mb-4 hidden" id="card-section">
+                <label for="card-number" class="block text-gray-700 font-bold mb-2">Card Number</label>
+                <input type="text" name="card_number" id="card-number" class="w-full border border-gray-300 p-3 rounded-lg" placeholder="Enter your Card Number" maxlength="16">
+
+                <label for="expiry-date" class="block text-gray-700 font-bold mb-2 mt-4">Expiry Date</label>
+                <input type="text" name="expiry_date" id="expiry-date" class="w-full border border-gray-300 p-3 rounded-lg" placeholder="MM/YY" maxlength="5">
+
+                <label for="cvv" class="block text-gray-700 font-bold mb-2 mt-4">CVV</label>
+                <input type="text" name="cvv" id="cvv" class="w-full border border-gray-300 p-3 rounded-lg" placeholder="CVV" maxlength="3">
+            </div>
+
+            <!-- Net Banking Section -->
+            <div class="mb-4 hidden" id="netbanking-section">
+                <label for="bank-name" class="block text-gray-700 font-bold mb-2">Bank Name</label>
+                <input type="text" name="bank_name" id="bank-name" class="w-full border border-gray-300 p-3 rounded-lg" placeholder="Enter your Bank Name">
+            </div>
+
+            <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-lg mt-4">Make Payment</button>
+        </form>
+
+        <div class="checkmark"></div>
+        <a href="/" class="continue-btn">Continue Shopping</a>
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        function validateCardNumber() {
+            const cardNumber = document.getElementById("card-number").value;
+            const cardNumberRegex = /^[0-9]{16}$/;
+            if (!cardNumberRegex.test(cardNumber)) {
+                alert("Please enter a valid 16-digit card number.");
+                return false;
+            }
+            return true;
+        }
+
+        function validateExpiryDate() {
+            const expiryDate = document.getElementById("expiry-date").value;
+            const expiryDateRegex = /^(0[1-9]|1[0-2])\/\d{2}$/;
+            if (!expiryDateRegex.test(expiryDate)) {
+                alert("Please enter the expiry date in MM/YY format.");
+                return false;
+            }
+            return true;
+        }
+
+        function validateCVV() {
+            const cvv = document.getElementById("cvv").value;
+            const cvvRegex = /^[0-9]{3}$/;
+            if (!cvvRegex.test(cvv)) {
+                alert("Please enter a valid 3-digit CVV.");
+                return false;
+            }
+            return true;
+        }
+
+        function validateUPI() {
+            const upiId = document.getElementById('upi-id').value;
+            if (upiId.includes('@')) {
+                document.getElementById('error-message-upi').classList.add('hidden');
+                return true;
+            } else {
+                document.getElementById('error-message-upi').classList.remove('hidden');
+                return false;
+            }
+        }
+
+        function validateForm() {
+            const paymentMethod = document.getElementById('payment-method').value;
+
+            if (paymentMethod === 'credit_card') {
+                return validateCardNumber() && validateExpiryDate() && validateCVV();
+            } else if (paymentMethod === 'upi') {
+                return validateUPI();
+            }
+            return true;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const paymentMethod = document.getElementById('payment-method');
+            const upiSection = document.getElementById('upi-section');
+            const cardSection = document.getElementById('card-section');
+            const netbankingSection = document.getElementById('netbanking-section');
+
+            paymentMethod.addEventListener('change', function () {
+                upiSection.classList.add('hidden');
+                cardSection.classList.add('hidden');
+                netbankingSection.classList.add('hidden');
+
+                if (this.value === 'upi') {
+                    upiSection.classList.remove('hidden');
+                } else if (this.value === 'credit_card') {
+                    cardSection.classList.remove('hidden');
+                } else if (this.value === 'net_banking') {
+                    netbankingSection.classList.remove('hidden');
+                }
+            });
+
+            document.getElementById('payment-form').addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Perform validation before proceeding
+                if (!validateForm()) {
+                    return;
+                }
+
+                // Hide the form and show spinner
+                document.getElementById('payment-form').classList.add('hidden');
+                document.querySelector('.spinner').style.display = 'block';
+
+                // Simulate payment processing delay
+                setTimeout(() => {
+                    // Hide spinner and show checkmark
+                    document.querySelector('.spinner').style.display = 'none';
+                    document.querySelector('.checkmark').style.display = 'block';
+
+                    // Show continue shopping button
+                    document.querySelector('.continue-btn').style.display = 'inline-block';
+
+                    // Simulate a short delay before submitting the form
+                    setTimeout(() => {
+                        document.getElementById('payment-form').submit(); // Now submit the form
+                    }, 1000);
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

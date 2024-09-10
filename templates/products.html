@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body class="bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 min-h-screen">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center p-4 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg text-white">
+        <div class="flex items-center space-x-2">
+            <img src="https://placehold.co/30x30" alt="Logo" class="w-8 h-8">
+            <span class="font-semibold">Tomato</span>
+            <span>Pune, Maharashtra, India</span>
+        </div>
+        <div class="flex space-x-6 items-center">
+            <span>Tomato Corporate</span>
+            <i class="fas fa-search"></i>
+            <span>Offers</span>
+            <span>Help</span>
+            <span>Sign In</span>
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+    </header>
+
+    <!-- Product Details Section -->
+    <section class="mt-12 flex justify-center">
+        <div class="bg-white shadow-lg rounded-lg p-6 max-w-4xl w-full">
+            <div class="flex flex-col md:flex-row">
+                <!-- Product Image -->
+                <div class="w-full md:w-1/2 flex justify-center">
+                    <img src="https://placehold.co/350x250" alt="Product Image" class="rounded-lg shadow-lg">
+                </div>
+                <!-- Product Details -->
+                <div class="w-full md:w-1/2 mt-6 md:mt-0 md:ml-8">
+                    <h1 class="text-4xl font-bold text-gray-800">{{ product.name }}</h1>
+                    <p class="text-gray-600 mt-4 text-xl">₹{{ product.price }}</p>
+                    <p class="text-gray-500 mt-2 text-sm">Restaurant: {{ product.restaurant_name }}</p>
+                    <p class="mt-6 text-gray-700 text-lg leading-relaxed">{{ product.description }}</p>
+
+                    <!-- Quantity Selector and Order Button -->
+                    <div class="mt-6 flex items-center space-x-4">
+                        <label for="quantity" class="text-gray-600">Quantity:</label>
+                        <select id="quantity" class="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                        <button class="ml-4 bg-pink-500 text-white px-6 py-2 rounded-lg shadow-lg hover:bg-pink-600 focus:outline-none focus:ring-4 focus:ring-pink-300 transition">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Similar Products Section -->
+    <section class="mt-16">
+        <h2 class="text-center text-3xl font-bold text-gray-800">Similar Products</h2>
+        <div class="flex justify-center mt-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Repeat this block for each similar product -->
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden transform transition duration-500 hover:scale-110 hover:bg-gradient-to-r from-pink-500 to-yellow-500 hover:text-white">
+                    <img src="https://placehold.co/250x150" alt="Similar Product" class="w-full">
+                    <div class="p-4">
+                        <p class="text-gray-800 font-bold">Similar Product Name</p>
+                        <p class="text-gray-500 mt-2">₹Price</p>
+                        <button class="bg-pink-500 text-white px-4 py-2 rounded-lg mt-4 hover:bg-pink-600 focus:outline-none focus:ring-4 focus:ring-pink-300 transition">
+                            View Product
+                        </button>
+                    </div>
+                </div>
+                <!-- End block -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-16 bg-gradient-to-r from-purple-500 to-pink-500 p-4 text-center text-white shadow-lg">
+        <p>&copy; 2024 Tomato | All rights reserved.</p>
+    </footer>
+
+</body>
+
+</html>

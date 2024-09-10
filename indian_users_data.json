@@ -1,0 +1,179 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "username": "omkarlomate",
+            "email": "omkarlomate123@gmail.com",
+            "password": "4445@Ok",
+            "role": "Admin"
+        },
+        {
+            "id": 2,
+            "username": "irai",
+            "email": "waglekavya@example.org",
+            "password": "LJt8EcAiN!gl",
+            "role": "Guest"
+        },
+        {
+            "id": 3,
+            "username": "isaiah18",
+            "email": "murtymaanas@example.org",
+            "password": "_!2ZrOubHkbG",
+            "role": "Manager"
+        },
+        {
+            "id": 4,
+            "username": "saggarwal",
+            "email": "wparmar@example.net",
+            "password": "%3ajZlo7+9PZ",
+            "role": "Guest"
+        },
+        {
+            "id": 5,
+            "username": "ssidhu",
+            "email": "uvasa@example.com",
+            "password": "*OvY1LgMs(s!",
+            "role": "Manager"
+        },
+        {
+            "id": 6,
+            "username": "jacksonborra",
+            "email": "girishpalla@example.com",
+            "password": "251e8CIf&2(4",
+            "role": "Guest"
+        },
+        {
+            "id": 7,
+            "username": "vasudha91",
+            "email": "isrinivas@example.com",
+            "password": "!2&tz#eSK1)W",
+            "role": "User"
+        },
+        {
+            "id": 8,
+            "username": "purohitaayush",
+            "email": "ebajaj@example.org",
+            "password": "$1!zfZrs%6W*",
+            "role": "Manager"
+        },
+        {
+            "id": 9,
+            "username": "rehaan85",
+            "email": "gandhiarjun@example.org",
+            "password": "Q6pIlBI^%7X5",
+            "role": "Manager"
+        },
+        {
+            "id": 10,
+            "username": "harshil87",
+            "email": "thakerguneet@example.net",
+            "password": "O$2tmm(iI8Uj",
+            "role": "User"
+        },
+        {
+            "id": 11,
+            "username": "kamala23",
+            "email": "dhaliwalaarnav@example.com",
+            "password": "%W!OPoV%b8VP",
+            "role": "Manager"
+        },
+        {
+            "id": 12,
+            "username": "ijayaraman",
+            "email": "wwali@example.com",
+            "password": "%I9qn&3Bn&cM",
+            "role": "Guest"
+        },
+        {
+            "id": 13,
+            "username": "mdugar",
+            "email": "wshankar@example.org",
+            "password": "C4Qbx__E%8t*",
+            "role": "Manager"
+        },
+        {
+            "id": 14,
+            "username": "nidhi31",
+            "email": "mkarnik@example.com",
+            "password": "W_rs0#BXYiF!",
+            "role": "Manager"
+        },
+        {
+            "id": 15,
+            "username": "ranveer14",
+            "email": "lminhas@example.org",
+            "password": "^vv1J0pyxPhX",
+            "role": "Guest"
+        },
+        {
+            "id": 16,
+            "username": "rajadvay",
+            "email": "vyanjana63@example.net",
+            "password": "gRF@Klxh!6nZ",
+            "role": "Guest"
+        },
+        {
+            "id": 17,
+            "username": "rattiadvik",
+            "email": "urvashivig@example.org",
+            "password": "_n2y@!cg@0gL",
+            "role": "Manager"
+        },
+        {
+            "id": 18,
+            "username": "hray",
+            "email": "warjasdhar@example.org",
+            "password": "%3UsJLpuYXjv",
+            "role": "Manager"
+        },
+        {
+            "id": 19,
+            "username": "bhardwajsamar",
+            "email": "kkunda@example.com",
+            "password": "V16!tqWyNC)I",
+            "role": "Manager"
+        },
+        {
+            "id": 20,
+            "username": "faris26",
+            "email": "charitagala@example.org",
+            "password": "D)92OAk1&_WT",
+            "role": "Manager"
+        },
+        {
+            "id": 21,
+            "username": "khoslaranveer",
+            "email": "wsubramanian@example.com",
+            "password": "beJ9ZFUw4+K_",
+            "role": "User"
+        },
+        {
+            "id": 22,
+            "username": "wapte",
+            "email": "aarushagrawal@example.org",
+            "password": "KX4O*nVX*KYv",
+            "role": "Manager"
+        },
+        {
+            "id": 23,
+            "username": "mitterkamala",
+            "email": "arinsrinivasan@example.net",
+            "password": "qOL82SMaWO+!",
+            "role": "Guest"
+        },
+        {
+            "id": 24,
+            "username": "urvashimanda",
+            "email": "srinivasanom@example.org",
+            "password": "$*tw5+SiimnS",
+            "role": "User"
+        },
+        {
+            "id": 25,
+            "username": "salviamol",
+            "email": "chasmum84@example.org",
+            "password": "&Q3jH&odczCb",
+            "role": "Guest"
+        }
+    ]
+}

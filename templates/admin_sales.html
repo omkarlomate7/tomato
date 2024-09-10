@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Sales Data</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Additional Tailwind CSS styles for hover animations and smooth transitions */
+        .hover-animate:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 2s;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-blue-100">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center p-6 bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg text-white">
+        <h1 class="text-2xl font-extrabold">Admin Dashboard - Sales Data</h1>
+        <a href="/" class="px-4 py-2 bg-white text-purple-600 font-semibold rounded-lg hover:bg-gray-200 transition-all duration-200">Back to Home</a>
+    </header>
+
+    <!-- Sales Graph Section -->
+    <section class="mt-10 px-4 max-w-6xl mx-auto fade-in">
+        <h1 class="text-5xl font-bold text-gray-800 mb-8 text-center">Sales Overview</h1>
+
+        <!-- Filter Buttons -->
+        <div class="flex justify-center space-x-6 mb-8">
+            <a href="{{ url_for('admin_sales', period='daily') }}" class="px-5 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-all duration-200 {% if period == 'daily' %}bg-blue-700{% endif %}">Daily Sales</a>
+            <a href="{{ url_for('admin_sales', period='weekly') }}" class="px-5 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-all duration-200 {% if period == 'weekly' %}bg-blue-700{% endif %}">Weekly Sales</a>
+            <a href="{{ url_for('admin_sales', period='monthly') }}" class="px-5 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition-all duration-200 {% if period == 'monthly' %}bg-blue-700{% endif %}">Monthly Sales</a>
+        </div>
+
+        <!-- Graph Image -->
+        <div class="relative hover-animate">
+            <div class="rounded-lg overflow-hidden shadow-lg">
+                <img src="data:image/png;base64,{{ graph_url }}" alt="Sales Graph" class="w-full">
+            </div>
+            <!-- Graph Description -->
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 text-white rounded-b-lg">
+                <p class="text-lg font-semibold">Total Sales Analysis</p>
+                <p class="text-sm">This graph visualizes the sales over the selected period, with predictions for the next day based on historical data.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-16 bg-gradient-to-r from-purple-500 to-pink-500 p-6 text-center text-white">
+        <p class="text-lg font-semibold">&copy; 2024 Tomato | All rights reserved.</p>
+        <p class="text-sm">Developed with love and care by the Tomato team.</p>
+    </footer>
+
+</body>
+</html>

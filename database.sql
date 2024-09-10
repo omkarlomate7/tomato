@@ -1,0 +1,1 @@
+select * from dishes WHERE image_url IS NOT NULL

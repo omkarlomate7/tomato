@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Popup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+
+    <!-- Popup Container -->
+    <div class="bg-white shadow-lg rounded-lg p-4 w-96 relative">
+        
+        <!-- Close Button -->
+        <button class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <!-- Product Image -->
+        <img src="https://placehold.co/400x400" alt="Farmhouse pizza with onions, capsicum, tomatoes, and grilled mushrooms" class="rounded-lg mb-4">
+
+        <!-- Product Info -->
+        <div>
+            <h2 class="text-xl font-semibold">Farmhouse Pizza</h2>
+            <p class="text-gray-600 mt-1">₹479</p>
+
+            <!-- Product Description -->
+            <p class="text-sm text-gray-500 mt-2">
+                Delightful combination of onion, capsicum, tomato & grilled mushroom. Available in Cheese Burst, Wheat Thin Crust, and Pan Crust options.
+            </p>
+
+            <!-- Buttons -->
+            <div class="flex items-center mt-4 space-x-2">
+                <button class="bg-green-500 text-white px-4 py-2 rounded-md flex-1 hover:bg-green-600 transition">
+                    ADD
+                </button>
+                <button class="text-green-500 border border-green-500 px-4 py-2 rounded-md flex-1 hover:bg-green-50 transition">
+                    Customisable
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
