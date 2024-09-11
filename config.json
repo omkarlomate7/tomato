@@ -1,0 +1,9 @@
+{
+    "database": {
+        "user": "postgres",
+        "password": "gAAAAABm4T9sv8UkO_DtUyF1uLPHQ3-nxFG7ERuMLqy4JBsPcTUY5jrh4Cn5hFJVyCN89V6OQcZ2gcpZsPNLPv6aAR-v74MRpQ==",
+        "dbname": "tomato_db",
+        "host": "localhost",
+        "port": "5432"
+    }
+}

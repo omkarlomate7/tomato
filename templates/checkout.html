@@ -1,42 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Checkout</h2>
+{% extends 'base.html' %}
 
-        <!-- Cart Items Summary -->
-        <div class="mb-6">
-            <h3 class="text-lg font-semibold text-gray-700 mb-3">Your Items</h3>
-            <ul>
-                {% if cart_items %}
-                {% for item in cart_items %}
-                <li class="flex justify-between items-center mb-3">
-                    <span class="text-gray-700">{{ item[0] }} (x{{ item[2] }})</span>
-                    <span class="text-gray-900 font-bold">₹{{ item[3] }}</span>
-                </li>
-                {% endfor %}
-                {% else %}
-                <p>Your cart is empty.</p>
-                {% endif %}
-            </ul>
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="flex flex-col min-h-screen">
+    <div class="flex-grow">
+        <div class="max-w-xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Checkout</h2>
+
+            <!-- Cart Items Summary -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">Your Items</h3>
+                <ul id="cart-items-list">
+                    {% if cart_items %}
+                    {% for item in cart_items %}
+                    <li class="flex justify-between items-center mb-3" id="cart-item-{{ item[4] }}">
+                        <span class="text-gray-700">{{ item[0] }} (x{{ item[2] }})</span>
+                        <span class="text-gray-900 font-bold">₹{{ item[3] }}</span>
+                    </li>
+                    {% endfor %}
+                    {% else %}
+                        <p>Your cart is empty.</p>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Total Price -->
+            <div class="mb-6">
+                <p class="text-lg font-semibold text-gray-700">Total:</p>
+                <p class="text-2xl font-bold text-gray-900" id="total-cost">₹{{ total_cost }}</p>
+            </div>
+
+            <!-- Proceed to Payment Button -->
+            <form action="/payment" method="GET">
+                <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-lg mt-4">Proceed to Payment</button>
+            </form>
         </div>
-
-        <!-- Total Price -->
-        <div class="mb-6">
-            <p class="text-lg font-semibold text-gray-700">Total:</p>
-            <p class="text-2xl font-bold text-gray-900">₹{{ total_cost }}</p>
-        </div>
-
-        <!-- Proceed to Payment Button -->
-        <form action="/payment" method="GET">
-            <button type="submit" class="w-full bg-green-500 text-white p-3 rounded-lg mt-4">Proceed to Payment</button>
-        </form>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

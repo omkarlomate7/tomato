@@ -6,24 +6,45 @@ import matplotlib.pyplot as plt
 import io
 import base64
 import matplotlib
+import json
+from config import decrypt_data  # Import the decrypt function from config.py
 matplotlib.use('Agg')  
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from fuzzywuzzy import process 
 
+
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config['SECRET_KEY'] = '3505b29ab1897a46de35f444850271ac'
 
+
+# New function to get configuration from a JSON file and decrypt the password
+def get_db_config():
+    with open('config.json', 'r') as config_file:
+        config = json.load(config_file)
+        # Decrypt the encrypted password before use
+        config['database']['password'] = decrypt_data(config['database']['password'].encode())
+    return config
+
+
+
 def get_db_connection():
+    
+    with open('config.json', 'r') as config_file:
+        config = json.load(config_file)
+
+   
+    decrypted_password = decrypt_data(config['database']['password'])
+
+   
     conn = psycopg2.connect(
-        dbname="tomato_db",
-        user="postgres",
-        password="4445",
-        host="localhost",
-        port="5432"
+        dbname=config['database']['dbname'],
+        user=config['database']['user'],
+        password=decrypted_password,  
+        host=config['database']['host'],
+        port=config['database']['port']
     )
     return conn
-
 
 @app.route('/')
 def index():
@@ -459,6 +480,47 @@ def add_to_cart():
 
     except Exception as e:
         return jsonify({'status': 'error', 'message': f'Error adding to cart: {str(e)}'}), 500
+    
+
+@app.route('/remove-from-cart', methods=['POST'])
+def remove_from_cart():
+    try:
+        # Parse the incoming data
+        data = request.get_json()
+        item_id = data.get('item_id')
+
+        if not item_id:
+            return jsonify({'status': 'error', 'message': 'Invalid item ID'}), 400
+
+        # Get the user's ID from the session
+        user_id = session.get('user_id')
+        if not user_id:
+            return jsonify({'status': 'error', 'message': 'User not logged in'}), 403
+
+        # Remove the item from the user's cart
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            DELETE FROM cart WHERE user_id = %s AND dish_id = %s
+        """, (user_id, item_id))
+        conn.commit()
+
+        # Recalculate the total cart cost after removal
+        cur.execute("""
+            SELECT SUM(dishes.price * cart.quantity) 
+            FROM cart 
+            JOIN dishes ON cart.dish_id = dishes.id 
+            WHERE cart.user_id = %s
+        """, (user_id,))
+        new_total = cur.fetchone()[0] or 0
+
+        cur.close()
+        conn.close()
+
+        return jsonify({'status': 'success', 'new_total': new_total})
+
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f'Error removing item: {str(e)}'}), 500
 
 @app.route('/checkout')
 def checkout():
@@ -496,6 +558,15 @@ def checkout():
     except Exception as e:
         flash(f"Error loading cart: {str(e)}", 'danger')
         return redirect('/')
+    
+
+    cart_item = Cart.query.filter_by(user_id=user_id, item_id=item_id).first()
+    if cart_item:
+        db.session.delete(cart_item)
+        db.session.commit()
+
+    return redirect(url_for('checkout'))
+
 
 @app.route('/payment', methods=['GET'])
 def payment():
