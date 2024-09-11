@@ -1,1 +1,2 @@
-select * from dishes WHERE image_url IS NOT NULL
+ALTER TABLE sales
+ADD COLUMN dish_id INTEGER REFERENCES dishes(id);

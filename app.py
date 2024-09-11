@@ -7,7 +7,7 @@ import io
 import base64
 import matplotlib
 import json
-from config import decrypt_data  # Import the decrypt function from config.py
+from config import decrypt_data  
 matplotlib.use('Agg')  
 import numpy as np
 from sklearn.linear_model import LinearRegression
@@ -18,11 +18,10 @@ app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config['SECRET_KEY'] = '3505b29ab1897a46de35f444850271ac'
 
 
-# New function to get configuration from a JSON file and decrypt the password
+
 def get_db_config():
     with open('config.json', 'r') as config_file:
         config = json.load(config_file)
-        # Decrypt the encrypted password before use
         config['database']['password'] = decrypt_data(config['database']['password'].encode())
     return config
 
@@ -347,7 +346,7 @@ def admin_sales():
 
 @app.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()  # Use JSON data for asynchronous request
+    data = request.get_json()  # Used JSON data for asynchronous request
     
     email = data.get('email')
     password = data.get('password')
